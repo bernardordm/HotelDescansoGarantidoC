@@ -85,15 +85,15 @@ int visualizarEstadias() {
 
 int main(void) {
     // Implementação do menu do usuário
-    int Opcao_Menu;
+    int opcao_Menu;
     printf("-------HOTEL DESCANSO GARANTIDO-------\n");
     do {
         printf("--------MENU--------\n");
         printf("Escolha uma opção:\n");
         printf("1- Cadastrar um cliente\n2- Cadastrar um funcionario\n3- Cadastrar uma estadia\n4- Check Out da estadia\n5- Pesquisa de cadastro\n6- Visualizar as estadias do cliente\n7- Finalizar a operação\n");
-        scanf("%d", &Opcao_Menu);
+        scanf("%d", &opcao_Menu);
 
-        switch (Opcao_Menu) {
+        switch (opcao_Menu) {
             case 1:
                 cadastrarCliente();
                 break;
@@ -125,7 +125,7 @@ int main(void) {
             default:
                 printf("Opção inválida!\n");
         }
-    } while (Opcao_Menu != 7);
+    } while (opcao_Menu != 7);
 
     return 0;
 }
