@@ -6,11 +6,11 @@
 
 O projeto visa desenvolver um sistema de gestão hoteleira para o Hotel Descanso Garantido, em Itacaré-BA. O sistema foi desenvolvido em linguagem C, e tem como objetivo facilitar o processo de cadastro e consulta de clientes e funcionários, cadastro e exclusão de estadias e consultas. 
 
-# 2. Funcionalidades 
+## 2. Funcionalidades 
 
 O sistema implementa as seguintes funcionalidades: 
 
-# Cadastro de Clientes: 
+### Cadastro de Clientes: 
 
 Permite registrar novos clientes, armazenando informações como código aleatório gerado automaticamente, nome, endereço e telefone. 
 
