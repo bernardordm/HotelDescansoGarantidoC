@@ -36,8 +36,8 @@ typedef struct
 typedef struct
 {
     int codigo;
-    char dataEntrada[11]; // Formato YYYY-MM-DD
-    char dataSaida[11];   // Formato YYYY-MM-DD
+    char dataEntrada[11];
+    char dataSaida[11];
     int quantidadeDiarias;
     int codigoCliente;
     int numeroQuarto;
@@ -51,55 +51,87 @@ typedef struct
     char status[10]; // "ocupado" ou "desocupado"
 } Quarto;
 
+// Função auxiliar para verificar se o arquivo está vazio e adicionar cabeçalhos
+void adicionarCabecalho(const char *filename, const char *cabecalho)
+{
+    FILE *file = fopen(filename, "r+");
+    if (file == NULL)
+    {
+        file = fopen(filename, "w");
+        if (file != NULL)
+        {
+            fprintf(file, "%s\n", cabecalho);
+            fclose(file);
+        }
+        else
+        {
+            printf("Erro ao abrir ou criar o arquivo %s.\n", filename);
+        }
+    }
+    else
+    {
+        fseek(file, 0, SEEK_END);
+        if (ftell(file) == 0)
+        {
+            fprintf(file, "%s\n", cabecalho);
+        }
+        fclose(file);
+    }
+}
+
 // Função para salvar um cliente no arquivo
 void salvarCliente(Cliente cliente)
 {
+    adicionarCabecalho(FILENAME_CLIENTES, "Codigo | Nome                       | Endereco                   | Telefone      ");
     FILE *file = fopen(FILENAME_CLIENTES, "a");
     if (file == NULL)
     {
         printf("Erro ao abrir o arquivo de clientes.\n");
         return;
     }
-    fprintf(file, "%d;%s;%s;%s\n", cliente.codigo, cliente.nome, cliente.endereco, cliente.telefone);
+    fprintf(file, "%-6d | %-25s | %-25s | %-15s\n", cliente.codigo, cliente.nome, cliente.endereco, cliente.telefone);
     fclose(file);
 }
 
 // Função para salvar um funcionário no arquivo
 void salvarFuncionario(Funcionario funcionario)
 {
+    adicionarCabecalho(FILENAME_FUNCIONARIOS, "Codigo | Nome                       | Telefone       | Cargo                | Salario    ");
     FILE *file = fopen(FILENAME_FUNCIONARIOS, "a");
     if (file == NULL)
     {
-        printf("Erro ao abrir o arquivo de funcionários.\n");
+        printf("Erro ao abrir o arquivo de funcionarios.\n");
         return;
     }
-    fprintf(file, "%d;%s;%s;%s;%.2f\n", funcionario.codigo, funcionario.nome, funcionario.telefone, funcionario.cargo, funcionario.salario);
+    fprintf(file, "%-6d | %-25s | %-15s | %-20s | %-10.2f\n", funcionario.codigo, funcionario.nome, funcionario.telefone, funcionario.cargo, funcionario.salario);
     fclose(file);
 }
 
 // Função para salvar uma estadia no arquivo
 void salvarEstadia(Estadia estadia)
 {
+    adicionarCabecalho(FILENAME_ESTADIAS, "Codigo | Data Entrada | Data Saida   | Diarias | Cliente | Quarto");
     FILE *file = fopen(FILENAME_ESTADIAS, "a");
     if (file == NULL)
     {
         printf("Erro ao abrir o arquivo de estadias.\n");
         return;
     }
-    fprintf(file, "%d;%s;%s;%d;%d;%d\n", estadia.codigo, estadia.dataEntrada, estadia.dataSaida, estadia.quantidadeDiarias, estadia.codigoCliente, estadia.numeroQuarto);
+    fprintf(file, "%-6d | %-12s | %-12s | %-7d | %-7d | %-5d\n", estadia.codigo, estadia.dataEntrada, estadia.dataSaida, estadia.quantidadeDiarias, estadia.codigoCliente, estadia.numeroQuarto);
     fclose(file);
 }
 
 // Função para salvar um quarto no arquivo
 void salvarQuarto(Quarto quarto)
 {
+    adicionarCabecalho(FILENAME_QUARTOS, "Numero | Hospedes | Valor Diaria | Status    ");
     FILE *file = fopen(FILENAME_QUARTOS, "a");
     if (file == NULL)
     {
         printf("Erro ao abrir o arquivo de quartos.\n");
         return;
     }
-    fprintf(file, "%d;%d;%.2f;%s\n", quarto.numeroQuarto, quarto.quantidadeHospedes, quarto.valorDiaria, quarto.status);
+    fprintf(file, "%-6d | %-8d | %-11.2f | %-10s\n", quarto.numeroQuarto, quarto.quantidadeHospedes, quarto.valorDiaria, quarto.status);
     fclose(file);
 }
 
@@ -133,7 +165,7 @@ void cadastrarCliente()
     printf("Nome: ");
     fgets(cliente.nome, MAX_NAME_LENGTH, stdin);
     cliente.nome[strcspn(cliente.nome, "\n")] = 0;
-    printf("Endereço: ");
+    printf("Endereco: ");
     fgets(cliente.endereco, MAX_ADDRESS_LENGTH, stdin);
     cliente.endereco[strcspn(cliente.endereco, "\n")] = 0;
     printf("Telefone: ");
@@ -158,12 +190,12 @@ void cadastrarFuncionario()
     printf("Cargo: ");
     fgets(funcionario.cargo, MAX_CARGO_LENGTH, stdin);
     funcionario.cargo[strcspn(funcionario.cargo, "\n")] = 0;
-    printf("Salário: ");
+    printf("Salario: ");
     scanf("%f", &funcionario.salario);
     getchar();
 
     salvarFuncionario(funcionario);
-    printf("Funcionário cadastrado com sucesso!\n");
+    printf("Funcionario cadastrado com sucesso!\n");
 }
 
 // Função auxiliar para converter uma string de data no formato "YYYY-MM-DD" para a estrutura tm
@@ -201,7 +233,7 @@ int encontrarQuartoDisponivel(int quantidadeHospedes)
     }
 
     Quarto quarto;
-    while (fscanf(file, "%d;%d;%f;%s\n", &quarto.numeroQuarto, &quarto.quantidadeHospedes, &quarto.valorDiaria, quarto.status) != EOF)
+    while (fscanf(file, "%d | %d | %f | %s\n", &quarto.numeroQuarto, &quarto.quantidadeHospedes, &quarto.valorDiaria, quarto.status) != EOF)
     {
         if (quarto.quantidadeHospedes >= quantidadeHospedes && strcmp(quarto.status, "desocupado") == 0)
         {
@@ -225,12 +257,12 @@ void atualizarStatusQuarto(int numeroQuarto, const char *status)
 
     Quarto quarto;
     long pos;
-    while ((pos = ftell(file)) != -1 && fscanf(file, "%d;%d;%f;%s\n", &quarto.numeroQuarto, &quarto.quantidadeHospedes, &quarto.valorDiaria, quarto.status) != EOF)
+    while ((pos = ftell(file)) != -1 && fscanf(file, "%d | %d | %f | %s\n", &quarto.numeroQuarto, &quarto.quantidadeHospedes, &quarto.valorDiaria, quarto.status) != EOF)
     {
         if (quarto.numeroQuarto == numeroQuarto)
         {
             fseek(file, pos, SEEK_SET);
-            fprintf(file, "%d;%d;%.2f;%s\n", quarto.numeroQuarto, quarto.quantidadeHospedes, quarto.valorDiaria, status);
+            fprintf(file, "%-6d | %-8d | %-11.2f | %-10s\n", quarto.numeroQuarto, quarto.quantidadeHospedes, quarto.valorDiaria, status);
             break;
         }
     }
@@ -241,13 +273,13 @@ void atualizarStatusQuarto(int numeroQuarto, const char *status)
 void cadastrarQuarto()
 {
     Quarto quarto;
-    printf("Número do Quarto: ");
+    printf("Numero do Quarto: ");
     scanf("%d", &quarto.numeroQuarto);
     getchar();
-    printf("Quantidade de Hóspedes: ");
+    printf("Quantidade de Hospedes: ");
     scanf("%d", &quarto.quantidadeHospedes);
     getchar();
-    printf("Valor da Diária: ");
+    printf("Valor da Diaria: ");
     scanf("%f", &quarto.valorDiaria);
     getchar();
     strcpy(quarto.status, "desocupado");
@@ -262,11 +294,11 @@ void cadastrarEstadia()
     Estadia estadia;
     estadia.codigo = gerarCodigo(FILENAME_ESTADIAS);
 
-    printf("Código do Cliente: ");
+    printf("Codigo do Cliente: ");
     scanf("%d", &estadia.codigoCliente);
     getchar();
 
-    printf("Quantidade de Hóspedes: ");
+    printf("Quantidade de Hospedes: ");
     int quantidadeHospedes;
     scanf("%d", &quantidadeHospedes);
     getchar();
@@ -275,7 +307,7 @@ void cadastrarEstadia()
     fgets(estadia.dataEntrada, 11, stdin);
     estadia.dataEntrada[strcspn(estadia.dataEntrada, "\n")] = 0;
 
-    printf("Data de Saída (YYYY-MM-DD): ");
+    printf("Data de Saida (YYYY-MM-DD): ");
     fgets(estadia.dataSaida, 11, stdin);
     estadia.dataSaida[strcspn(estadia.dataSaida, "\n")] = 0;
 
@@ -284,7 +316,7 @@ void cadastrarEstadia()
     int quartoDisponivel = encontrarQuartoDisponivel(quantidadeHospedes);
     if (quartoDisponivel == -1)
     {
-        printf("Nenhum quarto disponível para a quantidade de hóspedes desejada.\n");
+        printf("Nenhum quarto disponivel para a quantidade de hospedes desejada.\n");
         return;
     }
 
