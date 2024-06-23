@@ -1,8 +1,8 @@
 # Trabalho Interdisciplinar - Hotel Descanso Garantido
-## Pontifícia Universidade Católica de Minas Gerais 
-## Unidade - Coração Eucarístico
+### Pontifícia Universidade Católica de Minas Gerais 
+### Unidade - Coração Eucarístico
 
-  
+<img href = "https://github.com/flaviojuniordev/TRABALHO-FINAL-AEDS1/blob/main/img/logo_hotel.png">
 
 ## 1. Introdução 
 
