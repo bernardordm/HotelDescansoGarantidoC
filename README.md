@@ -1,6 +1,7 @@
 # Trabalho Interdisciplinar - Hotel Descanso Garantido
 ### Pontifícia Universidade Católica de Minas Gerais 
 ### Unidade - Coração Eucarístico
+### Bernardo de Resende e Flávio Júnior
 
 <img src = "https://github.com/flaviojuniordev/TRABALHO-FINAL-AEDS1/blob/main/img/logo_hotel.png">
 
