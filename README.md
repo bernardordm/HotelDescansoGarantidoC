@@ -1,10 +1,16 @@
 # Trabalho Interdisciplinar - Hotel Descanso Garantido
+## Pontifícia Universidade Católica de Minas Gerais 
+## Unidade - Coração Eucarístico
 
   
 
 ## 1. Introdução 
 
 O projeto visa desenvolver um sistema de gestão hoteleira para o Hotel Descanso Garantido, em Itacaré-BA. O sistema foi desenvolvido em linguagem C, e tem como objetivo facilitar o processo de cadastro e consulta de clientes e funcionários, cadastro e exclusão de estadias e consultas. 
+
+
+## Backlog do produto
+
 
 ## 2. Funcionalidades 
 
