@@ -68,7 +68,7 @@ O menu permanece em loop de execução até que o usuário selecione a opção "
 
 Todas as informações de cadastro dos clientes, funcionários ou estadias são salvas em arquivos e documentos externos para garantir a segurança e o armazenamento de informações cruciais ao sistema 
 
-## 3. Documentação e Testes 
+## 3. Casos de Testes das funcionalidades
 GIFS DE TESTES DE FUNCIONALIDADES
 
 ## 4. Considerações Adicionais 
