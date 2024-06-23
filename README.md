@@ -10,7 +10,7 @@ O projeto visa desenvolver um sistema de gestão hoteleira para o Hotel Descanso
 
 
 ## Backlog do produto
-
+### Sprint e requisitos:
 
 ## 2. Funcionalidades 
 
