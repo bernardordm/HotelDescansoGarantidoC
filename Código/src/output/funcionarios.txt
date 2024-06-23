@@ -1,2 +1,0 @@
-Codigo | Nome                       | Telefone       | Cargo                | Salario    
-1      | Marcos                    | 31987256169     | Gerente              | 9889.00   

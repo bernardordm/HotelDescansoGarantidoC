@@ -1,2 +1,0 @@
-Numero | Hospedes | Valor Diaria | Status    
-1      | 2        | 600.00      | desocupado

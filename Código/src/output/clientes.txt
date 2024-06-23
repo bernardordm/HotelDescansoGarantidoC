@@ -1,2 +1,0 @@
-Codigo | Nome                       | Endereco                   | Telefone      
-1      | Pedro                     | rua dos violoes 44        | 31988776303    
