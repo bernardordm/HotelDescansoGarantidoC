@@ -78,8 +78,9 @@ int gerarCodigo(const char *tipo)
 }
 
 // Função para calcular o número de diárias entre duas datas
-int calcularDiarias(const char *dataEntrada, const char *dataSaida)
-{
+
+
+int calcularDiarias(const char *dataEntrada, const char *dataSaida) {
     int diaEntrada, mesEntrada, anoEntrada;
     int diaSaida, mesSaida, anoSaida;
 
@@ -103,9 +104,8 @@ int calcularDiarias(const char *dataEntrada, const char *dataSaida)
     double diffTime = difftime(timeSaida, timeEntrada);
     int diffDays = (int)(diffTime / (60 * 60 * 24));
 
-    return diffDays;
+    return diffDays >= 0 ? diffDays : 0;
 }
-
 
 // Funções de cadastro
 void cadastrarCliente()
@@ -171,11 +171,9 @@ void cadastrarFuncionario()
     printf("Funcionario cadastrado com sucesso!\n");
 }
 
-void cadastrarQuarto()
-{
+void cadastrarQuarto() {
     FILE *file = fopen("quartos.txt", "a");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         perror("Erro ao abrir o arquivo de quartos");
         return;
     }
@@ -201,12 +199,12 @@ void cadastrarQuarto()
     printf("Quarto cadastrado com sucesso!\n");
 }
 
-void cadastrarEstadia()
-{
+
+
+void cadastrarEstadia() {
     FILE *fileEstadias = fopen("estadias.txt", "a");
     FILE *fileQuartos = fopen("quartos.txt", "r+");
-    if (fileEstadias == NULL || fileQuartos == NULL)
-    {
+    if (fileEstadias == NULL || fileQuartos == NULL) {
         perror("Erro ao abrir arquivos de estadias ou quartos");
         if (fileEstadias != NULL)
             fclose(fileEstadias);
@@ -218,6 +216,8 @@ void cadastrarEstadia()
     Estadia estadia;
     Quarto quarto;
     int encontrado = 0;
+    char buffer[256];
+    long pos;
 
     estadia.codigo = gerarCodigo("estadias");
 
@@ -238,22 +238,65 @@ void cadastrarEstadia()
     scanf("%d", &estadia.quantidadeHospedes);
 
     // Verifica se o quarto existe e está desocupado
-    while (fscanf(fileQuartos, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %f\nStatus: %s\n",
-                  &quarto.numero, &quarto.capacidadeMaximaHospedes, &quarto.valorDiaria, quarto.status) == 4)
-    {
-        if (quarto.numero == estadia.numeroQuarto && strcmp(quarto.status, "desocupado") == 0)
-        {
-            encontrado = 1;
-            break;
+    while (fgets(buffer, sizeof(buffer), fileQuartos)) {
+        sscanf(buffer, "Numero do Quarto: %d", &quarto.numero);
+        if (quarto.numero == estadia.numeroQuarto) {
+            fgets(buffer, sizeof(buffer), fileQuartos); // Quantidade de Hospedes
+            sscanf(buffer, "Quantidade de Hospedes: %d", &quarto.capacidadeMaximaHospedes);
+            fgets(buffer, sizeof(buffer), fileQuartos); // Valor da Diaria
+            sscanf(buffer, "Valor da Diaria: %f", &quarto.valorDiaria);
+            fgets(buffer, sizeof(buffer), fileQuartos); // Status
+            sscanf(buffer, "Status: %s", quarto.status);
+            if (strcmp(quarto.status, "desocupado") == 0 && quarto.capacidadeMaximaHospedes >= estadia.quantidadeHospedes) {
+                encontrado = 1;
+                pos = ftell(fileQuartos);
+                break;
+            }
         }
     }
 
-    if (encontrado && quarto.capacidadeMaximaHospedes >= estadia.quantidadeHospedes)
-    {
+    if (encontrado) {
         estadia.valorTotal = estadia.quantidadeDiarias * quarto.valorDiaria;
-        fseek(fileQuartos, -strlen("Status: desocupado\n"), SEEK_CUR);
-        fprintf(fileQuartos, "Status: ocupado\n");
 
+        // Reescreve o arquivo de quartos para atualizar o status
+        fseek(fileQuartos, 0, SEEK_SET);
+        FILE *tempFile = fopen("quartos_temp.txt", "w");
+        if (tempFile == NULL) {
+            perror("Erro ao abrir arquivo temporário");
+            fclose(fileEstadias);
+            fclose(fileQuartos);
+            return;
+        }
+        
+        rewind(fileQuartos);
+        while (fgets(buffer, sizeof(buffer), fileQuartos)) {
+            int numero;
+            sscanf(buffer, "Numero do Quarto: %d", &numero);
+            if (numero == estadia.numeroQuarto) {
+                fprintf(tempFile, "Numero do Quarto: %d\n", quarto.numero);
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Quantidade de Hospedes
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Valor da Diaria
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fprintf(tempFile, "Status: ocupado\n"); // Atualiza o status
+            } else {
+                fputs(buffer, tempFile);
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Quantidade de Hospedes
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Valor da Diaria
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Status
+            }
+        }
+
+        fclose(tempFile);
+        fclose(fileQuartos);
+        remove("quartos.txt");
+        rename("quartos_temp.txt", "quartos.txt");
+
+        // Salva a nova estadia
         fprintf(fileEstadias, "Codigo: %d\n", estadia.codigo);
         fprintf(fileEstadias, "Data de Entrada: %s\n", estadia.dataEntrada);
         fprintf(fileEstadias, "Data de Saida: %s\n", estadia.dataSaida);
@@ -261,101 +304,96 @@ void cadastrarEstadia()
         fprintf(fileEstadias, "Codigo do Cliente: %d\n", estadia.codigoCliente);
         fprintf(fileEstadias, "Numero do Quarto: %d\n", estadia.numeroQuarto);
         fprintf(fileEstadias, "Numero de Hospedes: %d\n", estadia.quantidadeHospedes);
-        fprintf(fileEstadias, "Valor Total: %.2f\n", estadia.valorTotal);  // Grava o valor total
+        fprintf(fileEstadias, "Valor Total: %.2f\n", estadia.valorTotal);
         fprintf(fileEstadias, HEADER_SEPARATOR);
 
         printf("Estadia cadastrada com sucesso!\n");
-    }
-    else
-    {
+    } else {
         printf("Erro: Quarto não encontrado, está ocupado ou a quantidade de hospedes excede a capacidade maxima.\n");
     }
 
     fclose(fileEstadias);
-    fclose(fileQuartos);
 }
 
 // Função para dar baixa em uma estadia
-// Função para dar baixa em uma estadia
-void darBaixaEstadia()
-{
+void darBaixaEstadia() {
     FILE *fileEstadias = fopen("estadias.txt", "r");
-    FILE *tempFileEstadias = fopen("temp_estadias.txt", "w");
     FILE *fileQuartos = fopen("quartos.txt", "r+");
-    if (fileEstadias == NULL || tempFileEstadias == NULL || fileQuartos == NULL)
-    {
+    FILE *tempFile = fopen("quartos_temp.txt", "w");
+    if (fileEstadias == NULL || fileQuartos == NULL || tempFile == NULL) {
         perror("Erro ao abrir arquivos");
         if (fileEstadias != NULL)
             fclose(fileEstadias);
-        if (tempFileEstadias != NULL)
-            fclose(tempFileEstadias);
         if (fileQuartos != NULL)
             fclose(fileQuartos);
+        if (tempFile != NULL)
+            fclose(tempFile);
         return;
     }
 
-    int codigoEstadia;
-    printf("Digite o codigo da estadia a ser baixada: ");
-    scanf("%d", &codigoEstadia);
-
     Estadia estadia;
     Quarto quarto;
+    int codigoEstadia;
     int encontrado = 0;
     char buffer[256];
 
-    while (fgets(buffer, sizeof(buffer), fileEstadias))
-    {
-        sscanf(buffer, "Codigo: %d\n", &estadia.codigo);
-        if (estadia.codigo == codigoEstadia)
-        {
-            encontrado = 1;
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula data de entrada
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula data de saída
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula quantidade de diárias
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula código do cliente
-            sscanf(buffer, "Numero do Quarto: %d\n", &estadia.numeroQuarto);
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula número de hóspedes
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula separator
+    printf("Digite o codigo da estadia a ser baixada: ");
+    scanf("%d", &codigoEstadia);
 
-            // Atualiza o status do quarto para "desocupado"
-            while (fgets(buffer, sizeof(buffer), fileQuartos))
-            {
-                sscanf(buffer, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %f\nStatus: %s\n",
-                       &quarto.numero, &quarto.capacidadeMaximaHospedes, &quarto.valorDiaria, quarto.status);
-                if (quarto.numero == estadia.numeroQuarto)
-                {
-                    // Move o ponteiro para o início da linha do status
-                    fseek(fileQuartos, -strlen(buffer), SEEK_CUR);
-                    // Atualiza o status para "desocupado"
-                    fprintf(fileQuartos, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %.2f\nStatus: desocupado\n",
-                            quarto.numero, quarto.capacidadeMaximaHospedes, quarto.valorDiaria);
-                    break;
-                }
+    while (fgets(buffer, sizeof(buffer), fileEstadias)) {
+        sscanf(buffer, "Codigo: %d", &estadia.codigo);
+        if (estadia.codigo == codigoEstadia) {
+            encontrado = 1;
+            fgets(buffer, sizeof(buffer), fileEstadias); // Data de Entrada
+            fgets(buffer, sizeof(buffer), fileEstadias); // Data de Saida
+            fgets(buffer, sizeof(buffer), fileEstadias); // Quantidade de Diarias
+            fgets(buffer, sizeof(buffer), fileEstadias); // Codigo do Cliente
+            fgets(buffer, sizeof(buffer), fileEstadias); // Numero do Quarto
+            sscanf(buffer, "Numero do Quarto: %d", &estadia.numeroQuarto);
+            fgets(buffer, sizeof(buffer), fileEstadias); // Numero de Hospedes
+            fgets(buffer, sizeof(buffer), fileEstadias); // Valor Total
+            fgets(buffer, sizeof(buffer), fileEstadias); // Separator
+            break;
+        }
+    }
+
+    if (encontrado) {
+        // Atualiza o status do quarto para desocupado
+        rewind(fileQuartos);
+        while (fgets(buffer, sizeof(buffer), fileQuartos)) {
+            int numero;
+            sscanf(buffer, "Numero do Quarto: %d", &numero);
+            if (numero == estadia.numeroQuarto) {
+                fprintf(tempFile, "Numero do Quarto: %d\n", numero);
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Quantidade de Hospedes
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Valor da Diaria
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fprintf(tempFile, "Status: desocupado\n"); // Atualiza o status
+            } else {
+                fputs(buffer, tempFile);
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Quantidade de Hospedes
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Valor da Diaria
+                fgets(buffer, sizeof(buffer), fileQuartos);
+                fputs(buffer, tempFile); // Status
             }
         }
-        else
-        {
-            // Escreve a linha atual no arquivo temporário
-            fprintf(tempFileEstadias, "%s", buffer);
-        }
-    }
 
-    fclose(fileEstadias);
-    fclose(tempFileEstadias);
-    fclose(fileQuartos);
-
-    if (encontrado)
-    {
-        remove("estadias.txt");
-        rename("temp_estadias.txt", "estadias.txt");
         printf("Estadia dada baixa com sucesso!\n");
+    } else {
+        printf("Erro: Estadia não encontrada.\n");
     }
-    else
-    {
-        remove("temp_estadias.txt");
-        printf("Estadia com o codigo %d nao encontrada!\n", codigoEstadia);
-    }
+
+    fclose(tempFile);
+    fclose(fileQuartos);
+    fclose(fileEstadias);
+    remove("quartos.txt");
+    rename("quartos_temp.txt", "quartos.txt");
 }
+
 
 // Função para inicializar os arquivos
 void inicializarArquivos()
