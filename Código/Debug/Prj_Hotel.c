@@ -43,6 +43,7 @@ typedef struct
     int codigoCliente;
     int numeroQuarto;
     int quantidadeHospedes;
+    float valorTotal;
 } Estadia;
 
 // Variáveis globais para controle dos códigos sequenciais
@@ -85,16 +86,26 @@ int calcularDiarias(const char *dataEntrada, const char *dataSaida)
     sscanf(dataEntrada, "%d/%d/%d", &diaEntrada, &mesEntrada, &anoEntrada);
     sscanf(dataSaida, "%d/%d/%d", &diaSaida, &mesSaida, &anoSaida);
 
-    // Converte as datas para dias desde o início do calendário gregoriano (simplificado)
-    long entrada = anoEntrada * 365 + mesEntrada * 30 + diaEntrada;
-    long saida = anoSaida * 365 + mesSaida * 30 + diaSaida;
+    struct tm tmEntrada = {0};
+    struct tm tmSaida = {0};
 
-    // Calcula a diferença de dias entre as datas
-    int diferenca = saida - entrada;
+    tmEntrada.tm_mday = diaEntrada;
+    tmEntrada.tm_mon = mesEntrada - 1;
+    tmEntrada.tm_year = anoEntrada - 1900;
 
-    // Retorna o número de diárias
-    return diferenca;
+    tmSaida.tm_mday = diaSaida;
+    tmSaida.tm_mon = mesSaida - 1;
+    tmSaida.tm_year = anoSaida - 1900;
+
+    time_t timeEntrada = mktime(&tmEntrada);
+    time_t timeSaida = mktime(&tmSaida);
+
+    double diffTime = difftime(timeSaida, timeEntrada);
+    int diffDays = (int)(diffTime / (60 * 60 * 24));
+
+    return diffDays;
 }
+
 
 // Funções de cadastro
 void cadastrarCliente()
@@ -226,33 +237,23 @@ void cadastrarEstadia()
     printf("Digite o numero de hospedes: ");
     scanf("%d", &estadia.quantidadeHospedes);
 
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), fileQuartos))
+    // Verifica se o quarto existe e está desocupado
+    while (fscanf(fileQuartos, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %f\nStatus: %s\n",
+                  &quarto.numero, &quarto.capacidadeMaximaHospedes, &quarto.valorDiaria, quarto.status) == 4)
     {
-        sscanf(buffer, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %f\nStatus: %s\n",
-               &quarto.numero, &quarto.quantidadeHospedes, &quarto.valorDiaria, quarto.status);
-        if (quarto.numero == estadia.numeroQuarto && strcmp(quarto.status, "desocupado"))
+        if (quarto.numero == estadia.numeroQuarto && strcmp(quarto.status, "desocupado") == 0)
         {
             encontrado = 1;
-            if (quarto.capacidadeMaximaHospedes >= estadia.quantidadeHospedes)
-            {
-                fseek(fileQuartos, -strlen(buffer), SEEK_CUR);
-                fprintf(fileQuartos, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %.2f\nStatus: ocupado\n",
-                        quarto.numero, quarto.quantidadeHospedes, quarto.valorDiaria);
-            }
-            else
-            {
-                printf("O quarto nao suporta o numero de hospedes informado.\n");
-                encontrado = 0;
-            }
             break;
         }
     }
 
-    fclose(fileQuartos);
-
-    if (encontrado)
+    if (encontrado && quarto.capacidadeMaximaHospedes >= estadia.quantidadeHospedes)
     {
+        estadia.valorTotal = estadia.quantidadeDiarias * quarto.valorDiaria;
+        fseek(fileQuartos, -strlen("Status: desocupado\n"), SEEK_CUR);
+        fprintf(fileQuartos, "Status: ocupado\n");
+
         fprintf(fileEstadias, "Codigo: %d\n", estadia.codigo);
         fprintf(fileEstadias, "Data de Entrada: %s\n", estadia.dataEntrada);
         fprintf(fileEstadias, "Data de Saida: %s\n", estadia.dataSaida);
@@ -260,17 +261,21 @@ void cadastrarEstadia()
         fprintf(fileEstadias, "Codigo do Cliente: %d\n", estadia.codigoCliente);
         fprintf(fileEstadias, "Numero do Quarto: %d\n", estadia.numeroQuarto);
         fprintf(fileEstadias, "Numero de Hospedes: %d\n", estadia.quantidadeHospedes);
+        fprintf(fileEstadias, "Valor Total: %.2f\n", estadia.valorTotal);  // Grava o valor total
         fprintf(fileEstadias, HEADER_SEPARATOR);
-        fclose(fileEstadias);
+
         printf("Estadia cadastrada com sucesso!\n");
     }
     else
     {
-        fclose(fileEstadias);
-        printf("Quarto nao encontrado, ocupado ou nao suporta o numero de hospedes informado!\n");
+        printf("Erro: Quarto não encontrado, está ocupado ou a quantidade de hospedes excede a capacidade maxima.\n");
     }
+
+    fclose(fileEstadias);
+    fclose(fileQuartos);
 }
 
+// Função para dar baixa em uma estadia
 // Função para dar baixa em uma estadia
 void darBaixaEstadia()
 {
@@ -307,28 +312,31 @@ void darBaixaEstadia()
             fgets(buffer, sizeof(buffer), fileEstadias); // Pula data de entrada
             fgets(buffer, sizeof(buffer), fileEstadias); // Pula data de saída
             fgets(buffer, sizeof(buffer), fileEstadias); // Pula quantidade de diárias
-            sscanf(buffer, "Codigo do Cliente: %d\n", &estadia.codigoCliente);
-            fgets(buffer, sizeof(buffer), fileEstadias); // Pula número do cliente
+            fgets(buffer, sizeof(buffer), fileEstadias); // Pula código do cliente
             sscanf(buffer, "Numero do Quarto: %d\n", &estadia.numeroQuarto);
             fgets(buffer, sizeof(buffer), fileEstadias); // Pula número de hóspedes
             fgets(buffer, sizeof(buffer), fileEstadias); // Pula separator
 
+            // Atualiza o status do quarto para "desocupado"
             while (fgets(buffer, sizeof(buffer), fileQuartos))
             {
                 sscanf(buffer, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %f\nStatus: %s\n",
-                       &quarto.numero, &quarto.quantidadeHospedes, &quarto.valorDiaria, quarto.status);
+                       &quarto.numero, &quarto.capacidadeMaximaHospedes, &quarto.valorDiaria, quarto.status);
                 if (quarto.numero == estadia.numeroQuarto)
                 {
+                    // Move o ponteiro para o início da linha do status
                     fseek(fileQuartos, -strlen(buffer), SEEK_CUR);
+                    // Atualiza o status para "desocupado"
                     fprintf(fileQuartos, "Numero do Quarto: %d\nQuantidade de Hospedes: %d\nValor da Diaria: %.2f\nStatus: desocupado\n",
-                            quarto.numero, quarto.quantidadeHospedes, quarto.valorDiaria);
+                            quarto.numero, quarto.capacidadeMaximaHospedes, quarto.valorDiaria);
                     break;
                 }
             }
         }
         else
         {
-            fprintf(tempFileEstadias, "%s", buffer); // Escreve no arquivo temporário
+            // Escreve a linha atual no arquivo temporário
+            fprintf(tempFileEstadias, "%s", buffer);
         }
     }
 
