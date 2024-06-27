@@ -1,8 +1,0 @@
-Codigo: 1
-Data de Entrada: 24062024
-Data de Saida: 29062024
-Quantidade de Diarias: 40936948
-Codigo do Cliente: 1
-Numero do Quarto: 1
-Numero de Hospedes: 3
-==================================================================
