@@ -53,17 +53,21 @@ O projeto apresenta um menu interativo e simplificado ao usuário, com as seguin
 
 2- Cadastrar Funcionário 
 
-3- Cadastrar Estadia 
+3- Cadastrar Quarto
 
-4- Baixa de Estadia 
+4- Cadastrar Estadia
 
-5- Pesquisar Cliente/Funcionário 
+5- Baixa de Estadia 
 
-6- Exibir Estadias por Cliente 
+6- Pesquisar Cliente
 
-7- Sair 
+7- Pesquisar Funcionário
 
-O menu permanece em loop de execução até que o usuário selecione a opção "Sair" (7). 
+8- Exibir Estadias por Cliente 
+
+9- Sair 
+
+O menu permanece em loop de execução até que o usuário selecione a opção "Sair" (9). 
 
 ## Armazenamento em Arquivos Externos: 
 
@@ -71,6 +75,24 @@ Todas as informações de cadastro dos clientes, funcionários ou estadias são 
 
 ## 3. Casos de Testes das funcionalidades
 GIFS DE TESTES DE FUNCIONALIDADES
+
+1- Cadastrar Cliente 
+
+2- Cadastrar Funcionário 
+
+3- Cadastrar Quarto
+
+4- Cadastrar Estadia
+
+5- Baixa de Estadia 
+
+6- Pesquisar Cliente
+
+7- Pesquisar Funcionário
+
+8- Exibir Estadias por Cliente 
+
+9- Sair 
 
 ## 4. Considerações Adicionais 
 
