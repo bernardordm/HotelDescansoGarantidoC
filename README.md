@@ -15,16 +15,14 @@ Backlog do produto:
 
  
 
-###SPRINT 1: (2 DIAS)  
+### SPRINT 1: (2 DIAS)  
 
  
  
 
  
 
-###SPRINT 2: (1 DIAS)  
-
- 
+### SPRINT 2: (1 DIAS)  
 
  
 
@@ -32,23 +30,25 @@ Backlog do produto:
 
  
 
-###SPRINT 3: (2 DIAS) 
+ 
+
+### SPRINT 3: (2 DIAS) 
 
   
 
  
 
-###SPRINT 4: (2 DIAS) 
+### SPRINT 4: (2 DIAS) 
 
  
 
  
 
-##Lista de assinaturas das funções e parâmetros: 
+## Lista de assinaturas das funções e parâmetros: 
 
  
 
-###Função `gerarCodigo` 
+### Função `gerarCodigo` 
 
  
 
@@ -123,7 +123,7 @@ int codigoEstadia = gerarCodigo("estadias");
 Esse formato foi projetado para ser facilmente copiado para o Word ou qualquer outro editor de texto, mantendo a formatação clara e organizada da documentação da função `gerarCodigo`. 
 
 
-###Função `calcularDiarias` 
+### Função `calcularDiarias` 
 
  
 
@@ -178,7 +178,7 @@ Notas:
 - O cálculo considera um método simplificado para converter datas em dias desde o início do calendário gregoriano, o que pode não ser totalmente preciso em contextos que exigem precisão extrema. 
 
  
-###Função `cadastrarCliente` 
+### Função `cadastrarCliente` 
 
  
 
@@ -268,7 +268,7 @@ Notas:
 - A função `gerarCodigo("funcionarios")` é utilizada para obter um código único para cada novo funcionário cadastrado. 
 
  
-###Função `cadastrarQuarto` 
+### Função `cadastrarQuarto` 
 
  
 
@@ -315,7 +315,7 @@ Notas:
 - A função `gerarCodigo("quartos")` é utilizada para obter um número único para cada novo quarto cadastrado. 
 
  
-###Função `cadastrarEstadia` 
+### Função `cadastrarEstadia` 
 
 Descrição: 
 
@@ -359,7 +359,7 @@ Notas:
 
  
 
-###Função `darBaixaEstadia` 
+### Função `darBaixaEstadia` 
 
  
 
@@ -409,7 +409,7 @@ Notas:
 
  
 
-###Função `inicializarArquivos` 
+### Função `inicializarArquivos` 
 
  
 
@@ -447,7 +447,7 @@ Notas:
 
 
 
-###Função `buscarClientePorCodigo` 
+### Função `buscarClientePorCodigo` 
 
 Descrição: 
 
@@ -501,7 +501,7 @@ Notas:
 
 - Esta função é útil para consultas rápidas de informações de clientes com base em seus códigos. 
 
-Função `buscarFuncionarioPorCodigo` 
+### Função `buscarFuncionarioPorCodigo` 
 
  
 
@@ -555,7 +555,7 @@ Notas:
 
 - Esta função é útil para consultas rápidas de informações de funcionários com base em seus códigos. 
 
-Função `buscarEstadiasPorCliente` 
+### Função `buscarEstadiasPorCliente` 
 
  
 
@@ -610,7 +610,7 @@ Notas:
 - Esta função é útil para consultar as estadias de um cliente específico com base no seu código. 
 
 
-###Função `menu` 
+### Função `menu` 
 
  
 
