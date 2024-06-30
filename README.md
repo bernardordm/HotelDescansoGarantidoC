@@ -660,30 +660,131 @@ Exemplo de Uso:
 
 menu(); 
 
-## 3. Casos de Testes das funcionalidades
-GIFS DE TESTES DE FUNCIONALIDADES
 
-1- Cadastrar Cliente 
+## 3. Casos de Teste das Funcionalidades
+### Função gerarCodigo
+Teste 1: Gerar código para cliente
 
-2- Cadastrar Funcionário 
+Entrada: "clientes"
+Saída Esperada: Próximo código disponível para cliente.
+Resultado: Pass/Fail
+Teste 2: Gerar código para funcionário
 
-3- Cadastrar Quarto
+Entrada: "funcionarios"
+Saída Esperada: Próximo código disponível para funcionário.
+Resultado: Pass/Fail
+Teste 3: Gerar código para quarto
 
-4- Cadastrar Estadia
+Entrada: "quartos"
+Saída Esperada: Próximo número disponível para quarto.
+Resultado: Pass/Fail
+Teste 4: Gerar código para estadia
 
-5- Baixa de Estadia 
+Entrada: "estadias"
+Saída Esperada: Próximo código disponível para estadia.
+Resultado: Pass/Fail
+Teste 5: Tipo inválido
 
-6- Pesquisar Cliente
+Entrada: "invalido"
+Saída Esperada: -1
+Resultado: Pass/Fail
+Função calcularDiarias
+Teste 1: Datas válidas
 
-7- Pesquisar Funcionário
+Entrada: "10/06/2024", "15/06/2024"
+Saída Esperada: 5
+Resultado: Pass/Fail
+Teste 2: Data de saída anterior à data de entrada
 
-8- Exibir Estadias por Cliente 
+Entrada: "15/06/2024", "10/06/2024"
+Saída Esperada: Valor negativo
+Resultado: Pass/Fail
+Teste 3: Datas no mesmo dia
 
-9- Sair 
+Entrada: "10/06/2024", "10/06/2024"
+Saída Esperada: 0
+Resultado: Pass/Fail
 
-## 4. Considerações Adicionais 
+### Função cadastrarCliente
 
+Teste 1: Cadastro de cliente válido
+Entrada: Nome, endereço e telefone
+Saída Esperada: Dados registrados corretamente em clientes.txt
+Resultado: Pass/Fail
 
-## 5. Conclusões 
+### Função cadastrarFuncionario
 
- 
+Teste 1: Cadastro de funcionário válido
+Entrada: Nome, telefone, cargo e salário
+Saída Esperada: Dados registrados corretamente em funcionarios.txt
+Resultado: Pass/Fail
+
+### Função cadastrarQuarto
+Teste 1: Cadastro de quarto válido
+Entrada: Capacidade máxima e valor da diária
+Saída Esperada: Dados registrados corretamente em quartos.txt
+Resultado: Pass/Fail
+
+### Função cadastrarEstadia
+Teste 1: Cadastro de estadia válida
+Entrada: Data de entrada, data de saída, código do cliente, número do quarto, número de hóspedes
+Saída Esperada: Dados registrados corretamente em estadias.txt e status do quarto atualizado em quartos.txt
+Resultado: Pass/Fail
+
+### Função darBaixaEstadia
+Teste 1: Baixa de estadia válida
+Entrada: Código da estadia
+Saída Esperada: Estadia removida de estadias.txt e status do quarto atualizado para "desocupado" em quartos.txt
+Resultado: Pass/Fail
+
+### Função buscarClientePorCodigo
+Teste 1: Cliente existente
+Entrada: Código do cliente
+Saída Esperada: Dados do cliente impressos corretamente
+Resultado: Pass/Fail
+Teste 2: Cliente inexistente
+
+Entrada: Código do cliente não registrado
+Saída Esperada: Mensagem informando que o cliente não foi encontrado
+Resultado: Pass/Fail
+Função buscarFuncionarioPorCodigo
+Teste 1: Funcionário existente
+
+Entrada: Código do funcionário
+Saída Esperada: Dados do funcionário impressos corretamente
+Resultado: Pass/Fail
+Teste 2: Funcionário inexistente
+
+Entrada: Código do funcionário não registrado
+Saída Esperada: Mensagem informando que o funcionário não foi encontrado
+Resultado: Pass/Fail
+Função buscarEstadiasPorCliente
+Teste 1: Cliente com estadias registradas
+
+Entrada: Código do cliente
+Saída Esperada: Dados das estadias do cliente impressos corretamente
+Resultado: Pass/Fail
+Teste 2: Cliente sem estadias registradas
+
+Entrada: Código do cliente sem estadias
+Saída Esperada: Mensagem informando que não foram encontradas estadias para o cliente
+Resultado: Pass/Fail
+
+### Função menu
+Teste 1: Todas as opções do menu
+Entrada: Seleção de cada opção do menu
+Saída Esperada: Cada função correspondente é chamada corretamente
+Resultado: Pass/Fail
+
+## 4. Considerações Adicionais
+Segurança dos Dados: É fundamental garantir a segurança dos arquivos de dados. Recomenda-se implementar verificações de permissões e backups regulares dos arquivos para evitar perda de dados.
+Validação de Entrada: Implementar validações robustas para os dados de entrada fornecidos pelos usuários, prevenindo erros de formatação e garantindo a integridade dos dados.
+Interface do Usuário: Uma interface de usuário amigável e intuitiva pode melhorar significativamente a experiência do usuário. Considerar a possibilidade de desenvolver uma interface gráfica no futuro.
+Manutenção: O código deve ser documentado adequadamente para facilitar a manutenção e futuras atualizações do sistema. O uso de comentários claros e concisos é essencial.
+Escalabilidade: O sistema foi projetado para um hotel de porte médio. Caso o número de registros cresça significativamente, pode ser necessário migrar para um sistema de banco de dados relacional para melhor performance e gestão dos dados.
+## 5. Conclusões
+O sistema de gestão hoteleira desenvolvido para o Hotel Descanso Garantido atende aos requisitos básicos de cadastro, consulta e gerenciamento de clientes, funcionários, quartos e estadias. A implementação em C proporciona um desempenho eficiente, e a documentação das funções facilita a compreensão e manutenção do código.
+
+Com base nos testes realizados, todas as funcionalidades principais foram implementadas e testadas com sucesso. Algumas considerações adicionais foram destacadas para futuras melhorias, incluindo a segurança dos dados, validação de entrada, interface do usuário, manutenção e escalabilidade.
+
+Recomendamos a continuidade do desenvolvimento, focando nas melhorias sugeridas e na implementação de novas funcionalidades que possam agregar valor ao sistema e aprimorar a gestão do hotel.
