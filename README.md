@@ -17,7 +17,7 @@ Backlog do produto:
 
 ### SPRINT 1: (2 DIAS)  
 
- 
+ <img src = "https://github.com/flaviojuniordev/TRABALHO-FINAL-AEDS1/blob/main/img/sprint%201.jpg" >
  
 
  
@@ -26,7 +26,7 @@ Backlog do produto:
 
  
 
- 
+ <img src = "https://github.com/flaviojuniordev/TRABALHO-FINAL-AEDS1/blob/main/img/sprint%202.jpg" >
 
  
 
@@ -35,12 +35,12 @@ Backlog do produto:
 ### SPRINT 3: (2 DIAS) 
 
   
-
+<img src = "https://github.com/flaviojuniordev/TRABALHO-FINAL-AEDS1/blob/main/img/sprint%203.jpg" >
  
 
 ### SPRINT 4: (2 DIAS) 
 
- 
+ <img src = "https://github.com/flaviojuniordev/TRABALHO-FINAL-AEDS1/blob/main/img/sprint%204.jpg" >
 
  
 
